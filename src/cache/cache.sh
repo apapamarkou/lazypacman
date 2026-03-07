@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Package cache management
+# Package cache management - minimal cache for fast startup
 
 # Check if cache needs rebuild
 cache_needs_rebuild() {
@@ -11,20 +11,23 @@ cache_needs_rebuild() {
     return 1
 }
 
-# Build package cache
+# Build minimal package cache (name + source only)
 build_cache() {
     mkdir -p "$CACHE_DIR"
+    local tmpfile="${CACHE_FILE}.tmp"
     
     {
-        pacman -Slq | while read -r pkg; do
-            jq -nc --arg name "$pkg" --arg source "repo" '{name: $name, source: $source}'
-        done
+        # Repo packages - fast streaming
+        pacman -Slq | awk '{print "{\"name\":\"" $0 "\",\"source\":\"repo\"}"}'        
         
+        # AUR packages - exclude repo duplicates
         yay -Slq 2>/dev/null | while read -r pkg; do
             pacman -Si "$pkg" &>/dev/null && continue
-            jq -nc --arg name "$pkg" --arg source "aur" '{name: $name, source: $source}'
+            printf '{"name":"%s","source":"aur"}\n' "$pkg"
         done
-    } > "$CACHE_FILE"
+    } > "$tmpfile"
+    
+    mv "$tmpfile" "$CACHE_FILE"
 }
 
 # Ensure cache exists
@@ -41,15 +44,10 @@ search_cache() {
     local names_only="${2:-false}"
     
     ensure_cache
-    
-    if [[ "$names_only" == "true" ]]; then
-        jq -r 'select(.name | contains("'"$term"'")) | "\(.name) \(.source)"' "$CACHE_FILE"
-    else
-        jq -r 'select(.name | contains("'"$term"'")) | "\(.name) \(.source)"' "$CACHE_FILE"
-    fi
+    jq -r 'select(.name | contains("'"$term"'")) | "\(.name) \(.source)"' "$CACHE_FILE"
 }
 
-# Get all packages from cache
+# Stream all packages from cache (fast)
 get_all_packages() {
     ensure_cache
     jq -r '"\(.name) \(.source)"' "$CACHE_FILE"

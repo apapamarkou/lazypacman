@@ -6,7 +6,7 @@ declare -A _LOADED_MODULES
 # Load a module by name
 require() {
     local module="$1"
-    [[ -n "${_LOADED_MODULES[$module]}" ]] && return 0
+    [[ -n "${_LOADED_MODULES[$module]:-}" ]] && return 0
     
     local module_path="${MODULE_DIR}/${module}.sh"
     if [[ ! -f "$module_path" ]]; then

@@ -1,4 +1,4 @@
-# pkg
+# lazypacman
 
 Fast TUI + CLI package manager wrapper for Arch Linux
 
@@ -8,7 +8,8 @@ A modern terminal interface for managing packages using pacman, yay, and fzf.
 
 - **Interactive TUI** - Browse and manage packages with a beautiful terminal interface
 - **Fast CLI** - Quick commands for common operations
-- **Smart Caching** - Daily package cache for instant searches
+- **Minimal Cache** - Lightweight cache (name + source only) for instant startup
+- **Lazy Preview** - Package details loaded on-demand for optimal performance
 - **AUR Support** - Seamless integration with yay for AUR packages
 - **Dependency Warnings** - Shows reverse dependencies before removal
 - **Update Notifications** - Lazy update checking every 6 hours
@@ -27,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/apapamarkou/lazypacman/main/install
 
 ```bash
 git clone https://github.com/apapamarkou/lazypacman.git
-cd pkg
+cd lazypacman
 ./install
 ```
 
@@ -122,11 +123,19 @@ Interactive mode:
 pkg
 ```
 
-## Cache
+## Performance
 
-Package cache is stored at `~/.cache/pkg/packages.ndjson` and rebuilt daily.
+lazypacman uses a **minimal cache + lazy preview** architecture:
 
-Update check cache is stored at `~/.cache/pkg/update_check` and refreshed every 6 hours.
+- **Minimal cache**: Only package names and sources stored (~3 MB)
+- **Lazy preview**: Dependencies and metadata fetched on-demand when selected
+- **Fast startup**: < 1 second even with 100k+ packages
+
+Cache locations:
+- Package cache: `~/.cache/lazypacman/packages.ndjson` (rebuilt daily)
+- Update cache: `~/.cache/lazypacman/update_check` (6 hour interval)
+
+See [PERFORMANCE.md](PERFORMANCE.md) for detailed benchmarks.
 
 ## Uninstall
 
@@ -138,13 +147,13 @@ Or manually:
 
 ```bash
 rm ~/.local/bin/pkg
-rm -rf ~/.cache/pkg
-rm -rf ~/.local/share/pkg
+rm -rf ~/.cache/lazypacman
+rm -rf ~/.local/share/lazypacman
 ```
 
 ## License
 
-MIT
+GPL-3.0
 
 ## Contributing
 

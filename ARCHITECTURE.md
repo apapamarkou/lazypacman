@@ -41,10 +41,12 @@ src/
 
 ## Key Features
 
-### 1. Smart Caching
-- Package list cached for 24 hours at `~/.cache/lazypacman/packages.ndjson`
-- Update checks cached for 6 hours at `~/.cache/lazypacman/update_check`
-- NDJSON format for efficient streaming
+### 1. Minimal Cache + Lazy Preview
+- **Minimal cache**: Only package names and sources (~3 MB for 100k packages)
+- **Lazy preview**: Dependencies and metadata fetched on-demand
+- **Fast startup**: < 1 second even with massive package lists
+- Package cache: `~/.cache/lazypacman/packages.ndjson` (rebuilt daily)
+- Update cache: `~/.cache/lazypacman/update_check` (6 hour interval)
 
 ### 2. Dual Interface
 - **TUI Mode**: Interactive fzf-based interface (no arguments)
