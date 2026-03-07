@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # Remote installation script for pkg
-# Usage: curl -fsSL https://example.com/pkg/install.sh | bash
+# Usage: curl -fsSL https://github.com/lazypacman/install.sh | bash
 
-REPO_URL="https://github.com/apapamarkou/pkg.git"
+REPO_URL="https://github.com/apapamarkou/lazypacman.git"
 INSTALL_DIR="$HOME/.local/share/pkg"
 BIN_DIR="$HOME/.local/bin"
 

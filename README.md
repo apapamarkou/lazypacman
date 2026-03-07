@@ -20,13 +20,13 @@ A modern terminal interface for managing packages using pacman, yay, and fzf.
 ### Quick Install (curl)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/apapamarkou/pkg/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/apapamarkou/lazypacman/main/install.sh | bash
 ```
 
 ### Manual Install
 
 ```bash
-git clone https://github.com/apapamarkou/pkg.git
+git clone https://github.com/apapamarkou/lazypacman.git
 cd pkg
 ./install
 ```
@@ -49,7 +49,10 @@ Install missing dependencies:
 
 ```bash
 sudo pacman -S fzf jq curl
-yay -S yay
+```
+
+```bash
+sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
 ```
 
 ## Usage

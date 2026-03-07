@@ -6,7 +6,7 @@ Thank you for your interest in contributing to pkg!
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/apapamarkou/pkg.git
+git clone https://github.com/apapamarkou/lazypacman.git
 cd pkg
 ```
 
