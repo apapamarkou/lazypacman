@@ -4,8 +4,7 @@ set -euo pipefail
 # Main entry point for pkg
 
 # Determine script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MODULE_DIR="$SCRIPT_DIR"
+MODULE_DIR="$HOME/.local/share/lazypacman/src"
 
 # Load core modules
 source "$MODULE_DIR/core/loader.sh"
