@@ -8,3 +8,5 @@ CACHE_MAX_AGE=$((24 * 3600))  # 24 hours
 UPDATE_CHECK_INTERVAL=$((6 * 3600))  # 6 hours
 
 # Performance: minimal cache for fast startup, lazy preview generation
+# Set to 0 to disable AUR in cache (much faster)
+INCLUDE_AUR="${LAZYPACMAN_INCLUDE_AUR:-1}"

@@ -16,16 +16,22 @@ build_cache() {
     mkdir -p "$CACHE_DIR"
     local tmpfile="${CACHE_FILE}.tmp"
     
-    {
-        # Repo packages - fast streaming
-        pacman -Slq | awk '{print "{\"name\":\"" $0 "\",\"source\":\"repo\"}"}'        
+    # Repo packages - fast streaming with awk
+    pacman -Slq | awk '{print "{\"name\":\"" $0 "\",\"source\":\"repo\"}"}'  > "$tmpfile"
+    
+    # AUR packages - optional (slow)
+    if [[ "$INCLUDE_AUR" == "1" ]] && command -v yay &>/dev/null; then
+        echo "Including AUR packages (this may take a while)..." >&2
         
-        # AUR packages - exclude repo duplicates
-        yay -Slq 2>/dev/null | while read -r pkg; do
-            pacman -Si "$pkg" &>/dev/null && continue
-            printf '{"name":"%s","source":"aur"}\n' "$pkg"
-        done
-    } > "$tmpfile"
+        # Build repo list once, then filter AUR against it
+        local repo_list="${CACHE_DIR}/repo.tmp"
+        pacman -Slq | sort > "$repo_list"
+        
+        yay -Slq 2>/dev/null | sort | comm -13 "$repo_list" - | \
+            awk '{print "{\"name\":\"" $0 "\",\"source\":\"aur\"}"}'  >> "$tmpfile"
+        
+        rm -f "$repo_list"
+    fi
     
     mv "$tmpfile" "$CACHE_FILE"
 }

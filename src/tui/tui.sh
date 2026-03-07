@@ -11,23 +11,32 @@ launch_tui() {
     # Ensure minimal cache exists
     ensure_cache
     
+    # Build installed packages lookup (once) - use associative array for O(1) lookup
+    declare -A installed_map
+    while read -r pkg; do
+        installed_map[$pkg]=1
+    done < <(pacman -Qq)
+    
     while true; do
         local selected
         # Stream packages directly from cache, format on-the-fly
-        selected=$(get_all_packages | while read -r pkg source; do
-            format_package_line "$pkg" "$source"
-        done | fzf \
+        selected=$(jq -r '"\(.name) \(.source)"' "$CACHE_FILE" | while read -r pkg source; do
+            # Fast O(1) lookup
+            local is_installed=0
+            [[ -n "${installed_map[$pkg]:-}" ]] && is_installed=1
+            format_package_line "$pkg" "$source" "$is_installed"
+        done | MODULE_DIR="$MODULE_DIR" fzf \
             --ansi \
             --layout=reverse \
             --height=24 \
             --border \
-            --preview-window=right:50% \
-            --preview "bash -c 'source \"$MODULE_DIR/core/loader.sh\"; MODULE_DIR=\"$MODULE_DIR\"; require core/config; require core/colors; require core/utils; require pacman/pacman; require tui/preview; generate_preview \"{}\"'" \
-            --header "Package Manager${update_msg} | Enter: install/remove | Ctrl+U: update | Ctrl+O: orphans | Ctrl+B: PKGBUILD | Ctrl+Q: quit" \
-            --bind "enter:execute(bash -c 'source \"$MODULE_DIR/core/loader.sh\"; MODULE_DIR=\"$MODULE_DIR\"; require core/config; require core/colors; require core/utils; require pacman/pacman; require tui/actions; handle_package_action \"{}\"')" \
-            --bind "ctrl-u:execute(bash -c 'source \"$MODULE_DIR/core/loader.sh\"; MODULE_DIR=\"$MODULE_DIR\"; require core/config; require system/updates; perform_update; read -rp \"Press Enter to continue...\"')" \
-            --bind "ctrl-o:execute(bash -c 'source \"$MODULE_DIR/core/loader.sh\"; MODULE_DIR=\"$MODULE_DIR\"; require system/orphan_cleaner; clean_orphans')" \
-            --bind "ctrl-b:execute(bash -c 'source \"$MODULE_DIR/core/loader.sh\"; MODULE_DIR=\"$MODULE_DIR\"; require tui/preview; preview_pkgbuild \$(echo \"{}\" | awk \"{print \\\$3}\")')" \
+            --preview-window=right:60% \
+            --preview "$MODULE_DIR/tui/fzf_preview.sh {}" \
+            --header "$(echo -e "${COLOR_CYAN}${COLOR_BOLD}Package Manager${update_msg}${COLOR_RESET}\n${COLOR_DIM}Enter: install/remove | Ctrl+U: update | Ctrl+O: orphans | Ctrl+B: PKGBUILD | Ctrl+Q: quit${COLOR_RESET}")" \
+            --bind "enter:execute($MODULE_DIR/tui/fzf_action.sh {})" \
+            --bind "ctrl-u:execute($MODULE_DIR/tui/fzf_update.sh)" \
+            --bind "ctrl-o:execute($MODULE_DIR/tui/fzf_orphans.sh)" \
+            --bind "ctrl-b:execute($MODULE_DIR/tui/fzf_pkgbuild.sh {})" \
             --bind "ctrl-q:abort" \
             --bind "esc:abort")
         
