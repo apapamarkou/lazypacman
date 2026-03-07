@@ -5,7 +5,7 @@ set -euo pipefail
 # Usage: curl -fsSL https://github.com/lazypacman/install.sh | bash
 
 REPO_URL="https://github.com/apapamarkou/lazypacman.git"
-INSTALL_DIR="$HOME/.local/share/pkg"
+INSTALL_DIR="$HOME/.local/share/lazypacman"
 BIN_DIR="$HOME/.local/bin"
 
 echo "Installing pkg from repository..."
