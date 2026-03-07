@@ -9,44 +9,52 @@ generate_preview() {
     
     [[ -z "$pkg" ]] && { echo "No package selected"; return; }
     
-    # Colors for preview
-    local C_CYAN="\033[0;36m"     # Cyan for field names
-    local C_GREY="\033[0;37m"     # Light grey for field values
-    local C_GREEN="\033[0;32m"    # Green
-    local C_BOLD="\033[1m"        # Bold
-    local C_DIM="\033[2m"         # Dim
-    local C_RESET="\033[0m"       # Reset
-    
     # Fetch package info on-demand
     local info
     info=$(get_package_info "$pkg" 2>/dev/null)
     
     if [[ -n "$info" ]]; then
         # Parse and colorize package info
-        echo -e "${C_CYAN}╭────────────────────────────────────────${C_RESET}"
+        echo -e "${COLOR_CYAN}╭────────────────────────────────────────${COLOR_RESET}"
         echo "$info" | while IFS=: read -r field value; do
             if [[ -n "$field" && -n "$value" ]]; then
-                # Field name in cyan, value in light grey
-                echo -e "${C_CYAN}│${C_RESET} ${C_CYAN}${field}:${C_RESET}${C_GREY}${value}${C_RESET}"
+                # Special handling for "Depends On" field
+                if [[ "$field" =~ "Depends On" ]]; then
+                    echo -ne "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET}"
+                    # Color each dependency based on install status
+                    for dep in $value; do
+                        [[ "$dep" == "None" ]] && { echo -e " ${COLOR_GREY}None${COLOR_RESET}"; continue 2; }
+                        dep_name=$(echo "$dep" | sed 's/[<>=].*//')
+                        if pacman -Q "$dep_name" &>/dev/null 2>&1; then
+                            echo -ne " ${COLOR_GREEN}${dep}${COLOR_RESET}"
+                        else
+                            echo -ne " ${COLOR_GREY}${dep}${COLOR_RESET}"
+                        fi
+                    done
+                    echo
+                else
+                    # Field name in cyan, value in light grey
+                    echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET}${COLOR_GREY}${value}${COLOR_RESET}"
+                fi
             elif [[ -n "$field" ]]; then
-                echo -e "${C_CYAN}│${C_RESET} ${C_GREY}${field}${C_RESET}"
+                echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_GREY}${field}${COLOR_RESET}"
             fi
         done
-        echo -e "${C_CYAN}╰────────────────────────────────────────${C_RESET}"
+        echo -e "${COLOR_CYAN}╰────────────────────────────────────────${COLOR_RESET}"
         echo
         
         # Show dependency tree only if package is installed
         if pacman -Q "$pkg" &>/dev/null; then
-            echo -e "${C_CYAN}▶ Dependency Tree${C_RESET}"
+            echo -e "${COLOR_CYAN}▶ Dependency Tree${COLOR_RESET}"
             pactree "$pkg" 2>/dev/null | while IFS= read -r line; do
                 if [[ "$line" == "$pkg" ]]; then
-                    echo -e "  ${C_BOLD}${C_GREEN}$line${C_RESET}"
+                    echo -e "  ${COLOR_BOLD}${COLOR_GREEN}$line${COLOR_RESET}"
                 else
-                    echo -e "  ${C_DIM}$line${C_RESET}"
+                    echo -e "  ${COLOR_DIM}$line${COLOR_RESET}"
                 fi
-            done || echo -e "  ${C_DIM}(error reading tree)${C_RESET}"
+            done || echo -e "  ${COLOR_DIM}(error reading tree)${COLOR_RESET}"
         else
-            echo -e "${C_CYAN}▶ Dependencies${C_RESET}"
+            echo -e "${COLOR_CYAN}▶ Dependencies${COLOR_RESET}"
             # Show dependencies from package info for non-installed packages
             local deps
             if pacman -Si "$pkg" &>/dev/null; then
@@ -62,20 +70,20 @@ generate_preview() {
                     # Remove version constraints
                     dep_name=$(echo "$dep" | sed 's/[<>=].*//')
                     if pacman -Q "$dep_name" &>/dev/null; then
-                        echo -e "  ${C_GREEN}[I]${C_RESET} $dep_name"
+                        echo -e "  ${COLOR_GREEN}[I]${COLOR_RESET} $dep_name"
                     else
-                        echo -e "  ${C_DIM}[_]${C_RESET} ${C_DIM}$dep_name${C_RESET}"
+                        echo -e "  ${COLOR_DIM}[_]${COLOR_RESET} ${COLOR_DIM}$dep_name${COLOR_RESET}"
                     fi
                 done
             else
-                echo -e "  ${C_DIM}None${C_RESET}"
+                echo -e "  ${COLOR_DIM}None${COLOR_RESET}"
             fi
         fi
     else
-        echo -e "${C_CYAN}╭────────────────────────────────────────${C_RESET}"
-        echo -e "${C_CYAN}│${C_RESET} ${C_CYAN}Package:${C_RESET} ${C_GREY}$pkg${C_RESET}"
-        echo -e "${C_CYAN}│${C_RESET} ${C_CYAN}Status:${C_RESET} ${C_GREY}Information not available${C_RESET}"
-        echo -e "${C_CYAN}╰────────────────────────────────────────${C_RESET}"
+        echo -e "${COLOR_CYAN}╭────────────────────────────────────────${COLOR_RESET}"
+        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}Package:${COLOR_RESET} ${COLOR_GREY}$pkg${COLOR_RESET}"
+        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}Status:${COLOR_RESET} ${COLOR_GREY}Information not available${COLOR_RESET}"
+        echo -e "${COLOR_CYAN}╰────────────────────────────────────────${COLOR_RESET}"
     fi
 }
 

@@ -23,7 +23,7 @@ format_package_line() {
     local installed="${3:-0}"
     local installed_mark="_"
     local source_label="AUR"
-    local color="\033[0;37m"  # Light grey for not installed
+    local color="$COLOR_GREY"  # Light grey for not installed
     
     if [[ "$installed" == "1" ]]; then
         installed_mark="I"
@@ -32,7 +32,7 @@ format_package_line() {
     
     if [[ "$source" == "repo" ]]; then
         source_label="Rep"
-        [[ "$installed_mark" == "_" ]] && color="\033[0;37m"  # Light grey
+        [[ "$installed_mark" == "_" ]] && color="$COLOR_GREY"  # Light grey
     fi
     
     echo -e "${color}[${installed_mark}] [${source_label}] ${pkg}${COLOR_RESET}"
