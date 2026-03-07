@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Uninstallation script for pkg
+# Uninstallation script for lazypacman
 
-echo "Uninstalling pkg..."
+echo "Uninstalling lazypacman..."
 
 # Remove symlink
 if [[ -L "$HOME/.local/bin/pkg" ]]; then
@@ -12,17 +12,17 @@ if [[ -L "$HOME/.local/bin/pkg" ]]; then
 fi
 
 # Remove cache
-if [[ -d "$HOME/.cache/pkg" ]]; then
-    rm -rf "$HOME/.cache/pkg"
-    echo "✓ Removed $HOME/.cache/pkg"
+if [[ -d "$HOME/.cache/lazypacman" ]]; then
+    rm -rf "$HOME/.cache/lazypacman"
+    echo "✓ Removed $HOME/.cache/lazypacman"
 fi
 
 # Remove installation directory (if installed via curl)
-if [[ -d "$HOME/.local/share/pkg" ]]; then
-    read -rp "Remove $HOME/.local/share/pkg? (Y/N): " confirm
+if [[ -d "$HOME/.local/share/lazypacman" ]]; then
+    read -rp "Remove $HOME/.local/share/lazypacman? (Y/N): " confirm
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
-        rm -rf "$HOME/.local/share/pkg"
-        echo "✓ Removed $HOME/.local/share/pkg"
+        rm -rf "$HOME/.local/share/lazypacman"
+        echo "✓ Removed $HOME/.local/share/lazypacman"
     fi
 fi
 

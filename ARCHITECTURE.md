@@ -1,4 +1,4 @@
-# pkg - Project Overview
+# lazypacman - Project Overview
 
 ## Architecture
 
@@ -42,8 +42,8 @@ src/
 ## Key Features
 
 ### 1. Smart Caching
-- Package list cached for 24 hours at `~/.cache/pkg/packages.ndjson`
-- Update checks cached for 6 hours at `~/.cache/pkg/update_check`
+- Package list cached for 24 hours at `~/.cache/lazypacman/packages.ndjson`
+- Update checks cached for 6 hours at `~/.cache/lazypacman/update_check`
 - NDJSON format for efficient streaming
 
 ### 2. Dual Interface

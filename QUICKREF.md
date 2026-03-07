@@ -1,9 +1,9 @@
-# pkg - Quick Reference
+# lazypacman - Quick Reference
 
 ## Installation
 ```bash
 # Local
-git clone <repo> && cd pkg && ./install
+git clone <repo> && cd lazypacman && ./install
 
 # Remote
 curl -fsSL <url>/install.sh | bash
@@ -33,9 +33,9 @@ ESC        Quit
 
 ## Files
 ```
-~/.local/bin/pkg              # Executable
-~/.cache/pkg/packages.ndjson  # Package cache (24h)
-~/.cache/pkg/update_check     # Update cache (6h)
+~/.local/bin/pkg                      # Executable
+~/.cache/lazypacman/packages.ndjson   # Package cache (24h)
+~/.cache/lazypacman/update_check      # Update cache (6h)
 ```
 
 ## Module Structure
