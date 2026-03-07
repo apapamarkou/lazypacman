@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Installation script for pkg
+
+INSTALL_DIR="$HOME/.local/bin"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PKG_SCRIPT="$SCRIPT_DIR/src/pkg"
+
+echo "Installing pkg..."
+
+# Create install directory
+mkdir -p "$INSTALL_DIR"
+
+# Create symlink
+ln -sf "$PKG_SCRIPT" "$INSTALL_DIR/pkg"
+
+# Make executable
+chmod +x "$PKG_SCRIPT"
+
+echo "✓ Installed to $INSTALL_DIR/pkg"
+
+# Check if in PATH
+if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
+    echo
+    echo "Warning: $INSTALL_DIR is not in your PATH"
+    echo "Add this to your ~/.bashrc or ~/.zshrc:"
+    echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
+fi
+
+# Check dependencies
+echo
+echo "Checking dependencies..."
+missing=()
+for dep in pacman yay fzf jq curl; do
+    if ! command -v "$dep" &>/dev/null; then
+        missing+=("$dep")
+    fi
+done
+
+if [[ ${#missing[@]} -gt 0 ]]; then
+    echo "✗ Missing dependencies: ${missing[*]}"
+    echo "  Install with: sudo pacman -S ${missing[*]}"
+    exit 1
+else
+    echo "✓ All dependencies found"
+fi
+
+echo
+echo "Installation complete! Run 'pkg' to start."

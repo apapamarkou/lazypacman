@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Main entry point for pkg
+
+# Determine script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODULE_DIR="$SCRIPT_DIR"
+
+# Load core modules
+source "$MODULE_DIR/core/loader.sh"
+
+require core/config
+require core/colors
+require core/utils
+require cache/cache
+require system/dependencies
+require system/updates
+require system/orphan_cleaner
+require pacman/pacman
+require tui/preview
+require tui/actions
+require tui/tui
+require cli/help
+require cli/commands
+require cli/parser
+
+# Check dependencies
+check_dependencies || exit 1
+
+# Main logic
+if [[ $# -eq 0 ]]; then
+    # No arguments - launch TUI
+    launch_tui
+else
+    # CLI mode
+    parse_cli "$@"
+fi

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Uninstallation script for pkg
+
+echo "Uninstalling pkg..."
+
+# Remove symlink
+if [[ -L "$HOME/.local/bin/pkg" ]]; then
+    rm "$HOME/.local/bin/pkg"
+    echo "✓ Removed $HOME/.local/bin/pkg"
+fi
+
+# Remove cache
+if [[ -d "$HOME/.cache/pkg" ]]; then
+    rm -rf "$HOME/.cache/pkg"
+    echo "✓ Removed $HOME/.cache/pkg"
+fi
+
+# Remove installation directory (if installed via curl)
+if [[ -d "$HOME/.local/share/pkg" ]]; then
+    read -rp "Remove $HOME/.local/share/pkg? (Y/N): " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        rm -rf "$HOME/.local/share/pkg"
+        echo "✓ Removed $HOME/.local/share/pkg"
+    fi
+fi
+
+echo
+echo "Uninstallation complete!"
