@@ -65,7 +65,8 @@ cli_search() {
     # Count results
     local results
     results=$(search_cache "$term" "$names_only")
-    local count=$(echo "$results" | wc -l)
+    local count
+    count=$(echo "$results" | wc -l)
     
     if [[ $count -gt 24 ]]; then
         # Use pager for long lists

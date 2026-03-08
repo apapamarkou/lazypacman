@@ -12,6 +12,7 @@
 # email: papamarkoua@gmail.com
 #
 # ANSI color codes
+# shellcheck disable=SC2034  # Variables used by sourcing scripts
 
 COLOR_GREEN='\033[0;32m'
 COLOR_BLUE='\033[0;34m'

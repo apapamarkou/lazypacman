@@ -59,7 +59,8 @@ ensure_cache() {
 # Search packages in cache
 search_cache() {
     local term="$1"
-    local names_only="${2:-false}"
+    # names_only parameter reserved for future use
+    # local names_only="${2:-false}"
     
     ensure_cache
     jq -r 'select(.name | contains("'"$term"'")) | "\(.name) \(.source)"' "$CACHE_FILE"

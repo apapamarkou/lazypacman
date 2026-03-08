@@ -80,6 +80,13 @@ case "$TEST_TYPE" in
         run_tests "$SCRIPT_DIR/functional" "functional" || failed=1
         run_tests "$SCRIPT_DIR/performance" "performance" || failed=1
         
+        # Clean up cache to rebuild actual database on next run
+        CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lazypacman"
+        if [[ -f "$CACHE_DIR/packages.ndjson" ]]; then
+            rm -f "$CACHE_DIR/packages.ndjson"
+            echo -e "${YELLOW}Cleaned package cache - will rebuild on next run${RESET}"
+        fi
+        
         if [[ $failed -eq 0 ]]; then
             echo
             echo -e "${GREEN}✓ All tests passed!${RESET}"

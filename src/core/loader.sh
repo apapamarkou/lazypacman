@@ -26,6 +26,7 @@ require() {
         exit 1
     fi
     
+    # shellcheck disable=SC1090  # Dynamic sourcing by design
     source "$module_path"
     _LOADED_MODULES[$module]=1
 }

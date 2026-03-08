@@ -83,14 +83,14 @@ generate_preview() {
                 # Display root package
                 echo -e "  ${COLOR_BOLD}${COLOR_GREY}$pkg${COLOR_RESET}"
                 # Parse and display each dependency as tree with install status
-                local dep_array=($deps)
+                IFS=' ' read -ra dep_array <<< "$deps"
                 local total=${#dep_array[@]}
                 local i=0
                 for dep in "${dep_array[@]}"; do
                     [[ -z "$dep" ]] && continue
                     i=$((i + 1))
                     # Remove version constraints
-                    dep_name=$(echo "$dep" | sed 's/[<>=].*//')
+                    dep_name="${dep%%[<>=]*}"
                     
                     # Tree characters
                     if [[ $i -eq $total ]]; then

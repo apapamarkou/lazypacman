@@ -27,7 +27,7 @@ clean_orphans() {
     echo "$orphans"
     echo
     if ask_yn "Remove these packages? (Y/N): "; then
-        sudo pacman -Rns $orphans
+        sudo pacman -Rns "$orphans"
     else
         echo "Cancelled."
     fi

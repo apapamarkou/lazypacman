@@ -12,6 +12,7 @@
 # email: papamarkoua@gmail.com
 #
 # Configuration and constants
+# shellcheck disable=SC2034  # Variables used by sourcing scripts
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lazypacman"
 CACHE_FILE="$CACHE_DIR/packages.ndjson"  # Minimal cache: name + source only
