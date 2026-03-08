@@ -29,6 +29,8 @@ launch_tui() {
         installed_map[$pkg]=1
     done < <(pacman -Qq)
     
+    export MODULE_DIR
+    
     while true; do
         local selected
         # Stream packages directly from cache, format on-the-fly
@@ -37,7 +39,7 @@ launch_tui() {
             local is_installed=0
             [[ -n "${installed_map[$pkg]:-}" ]] && is_installed=1
             format_package_line "$pkg" "$source" "$is_installed"
-        done | MODULE_DIR="$MODULE_DIR" fzf \
+        done | fzf \
             --ansi \
             --layout=reverse \
             --height=24 \
