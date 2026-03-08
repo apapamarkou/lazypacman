@@ -19,6 +19,9 @@ parse_cli() {
         search-names-only|sno)
             cli_search "$@" true
             ;;
+        info)
+            cli_info "$@"
+            ;;
         update|u)
             cli_update
             ;;

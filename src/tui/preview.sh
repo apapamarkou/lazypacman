@@ -16,28 +16,42 @@ generate_preview() {
     if [[ -n "$info" ]]; then
         # Parse and colorize package info
         echo -e "${COLOR_CYAN}╭────────────────────────────────────────${COLOR_RESET}"
-        echo "$info" | while IFS=: read -r field value; do
-            if [[ -n "$field" && -n "$value" ]]; then
+        mapfile -t lines <<< "$info"
+        for line in "${lines[@]}"; do
+            # Check if line contains a field (has colon)
+            if [[ "$line" =~ ^([^:]+):(.*)$ ]]; then
+                local field="${BASH_REMATCH[1]}"
+                local value="${BASH_REMATCH[2]}"
+                value="${value# }"  # Trim leading space
+                
                 # Special handling for "Depends On" field
                 if [[ "$field" =~ "Depends On" ]]; then
                     echo -ne "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET}"
                     # Color each dependency based on install status
-                    for dep in $value; do
-                        [[ "$dep" == "None" ]] && { echo -e " ${COLOR_GREY}None${COLOR_RESET}"; continue 2; }
-                        dep_name=$(echo "$dep" | sed 's/[<>=].*//')
-                        if pacman -Q "$dep_name" &>/dev/null 2>&1; then
-                            echo -ne " ${COLOR_GREEN}${dep}${COLOR_RESET}"
-                        else
-                            echo -ne " ${COLOR_GREY}${dep}${COLOR_RESET}"
-                        fi
-                    done
-                    echo
+                    if [[ -z "$value" || "$value" == "None" ]]; then
+                        echo -e " ${COLOR_GREY}None${COLOR_RESET}"
+                    else
+                        for dep in $value; do
+                            dep_name=$(echo "$dep" | sed 's/[<>=].*//')
+                            if pacman -Q "$dep_name" &>/dev/null 2>&1; then
+                                echo -ne " ${COLOR_GREEN}${dep}${COLOR_RESET}"
+                            else
+                                echo -ne " ${COLOR_GREY}${dep}${COLOR_RESET}"
+                            fi
+                        done
+                        echo
+                    fi
                 else
                     # Field name in cyan, value in light grey
-                    echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET}${COLOR_GREY}${value}${COLOR_RESET}"
+                    if [[ -z "$value" ]]; then
+                        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET} ${COLOR_GREY}None${COLOR_RESET}"
+                    else
+                        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET} ${COLOR_GREY}${value}${COLOR_RESET}"
+                    fi
                 fi
-            elif [[ -n "$field" ]]; then
-                echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_GREY}${field}${COLOR_RESET}"
+            elif [[ -n "$line" ]]; then
+                # Continuation line (no colon) - display as grey text with indent
+                echo -e "${COLOR_CYAN}│${COLOR_RESET}   ${COLOR_GREY}${line}${COLOR_RESET}"
             fi
         done
         echo -e "${COLOR_CYAN}╰────────────────────────────────────────${COLOR_RESET}"

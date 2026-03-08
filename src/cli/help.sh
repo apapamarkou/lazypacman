@@ -10,8 +10,9 @@ USAGE:
     pkg <command> [args]         Run CLI command
 
 COMMANDS:
-    install, i <package>         Install a package
-    remove, r <package>          Remove a package
+    install, i <package>...      Install package(s)
+    remove, r <package>...       Remove package(s)
+    info <package>               Show package information
     search, s <term>             Search packages
     search-names-only, sno <term> Search package names only
     update, u                    Update system
@@ -27,6 +28,8 @@ TUI KEY BINDINGS:
 
 EXAMPLES:
     pkg install neovim
+    pkg install vim git curl
+    pkg info firefox
     pkg search firefox
     pkg update
 EOF

@@ -4,6 +4,13 @@
 # Install package
 install_package() {
     local pkg="$1"
+    
+    # Check if already installed
+    if is_installed "$pkg"; then
+        echo -e "${COLOR_GREEN}Package '$pkg' is already installed.${COLOR_RESET}"
+        return 0
+    fi
+    
     local source
     source=$(get_package_source "$pkg")
     
