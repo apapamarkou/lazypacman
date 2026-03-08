@@ -7,14 +7,16 @@ A modern terminal interface for managing packages using pacman, yay, and fzf.
 ## Features
 
 - **Interactive TUI** - Browse and manage packages with a beautiful terminal interface
-- **Fast CLI** - Quick commands for common operations
+- **Fast CLI** - Quick commands for common operations with multi-package support
 - **Minimal Cache** - Lightweight cache (name + source only) for instant startup
 - **Lazy Preview** - Package details loaded on-demand for optimal performance
+- **Colored Preview** - Syntax-highlighted package info with dependency tree visualization
 - **AUR Support** - Seamless integration with yay for AUR packages
 - **Dependency Warnings** - Shows reverse dependencies before removal
 - **Update Notifications** - Lazy update checking every 6 hours
 - **Orphan Cleaning** - Easy removal of unused dependencies
 - **PKGBUILD Preview** - Inspect AUR build scripts before installation
+- **Smart Paging** - Automatic pager for long search results
 
 ## Installation
 
@@ -45,11 +47,13 @@ export PATH="$HOME/.local/bin:$PATH"
 - `fzf` - Fuzzy finder
 - `jq` - JSON processor
 - `curl` - HTTP client
+- `most` - Pager for viewing files (optional, falls back to less)
+- `pacman-contrib` - For dependency tree visualization (optional)
 
 Install missing dependencies:
 
 ```bash
-sudo pacman -S fzf jq curl
+sudo pacman -S fzf jq curl most pacman-contrib
 ```
 
 ```bash
@@ -69,13 +73,15 @@ pkg
 ### CLI Commands
 
 ```bash
-pkg install <package>          # Install a package
-pkg i <package>                # Short form
+pkg install <package>...       # Install one or more packages
+pkg i <package>...             # Short form
 
-pkg remove <package>           # Remove a package
-pkg r <package>                # Short form
+pkg remove <package>...        # Remove one or more packages
+pkg r <package>...             # Short form
 
-pkg search <term>              # Search packages
+pkg info <package>             # Show package information
+
+pkg search <term>              # Search packages (auto-paged if >24 results)
 pkg s <term>                   # Short form
 
 pkg search-names-only <term>   # Search names only
@@ -103,9 +109,19 @@ pkg h                          # Short form
 
 ## Examples
 
-Install neovim:
+Install single package:
 ```bash
 pkg install neovim
+```
+
+Install multiple packages:
+```bash
+pkg install vim git curl htop
+```
+
+Get package info:
+```bash
+pkg info firefox
 ```
 
 Search for browsers:

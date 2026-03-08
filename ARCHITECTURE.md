@@ -45,8 +45,18 @@ src/
 - **Minimal cache**: Only package names and sources (~3 MB for 100k packages)
 - **Lazy preview**: Dependencies and metadata fetched on-demand
 - **Fast startup**: < 1 second even with massive package lists
+- **Colored preview**: Syntax-highlighted package info with tree visualization
 - Package cache: `~/.cache/lazypacman/packages.ndjson` (rebuilt daily)
 - Update cache: `~/.cache/lazypacman/update_check` (6 hour interval)
+
+### 2. Multi-Package Operations
+- Install/remove multiple packages in one command
+- Example: `pkg install vim git curl htop`
+
+### 3. Smart CLI Features
+- **Info command**: `pkg info <package>` shows detailed package information
+- **Auto-paging**: Search results >24 lines automatically use `most` pager
+- **Single-key prompts**: Y/N questions respond to single keypress
 
 ### 2. Dual Interface
 - **TUI Mode**: Interactive fzf-based interface (no arguments)

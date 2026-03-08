@@ -2,19 +2,20 @@
 
 ## Installation
 ```bash
-# Local
-git clone <repo> && cd lazypacman && ./install
+# Remote (auto-installs git if needed)
+curl -fsSL https://raw.githubusercontent.com/apapamarkou/lazypacman/main/install.sh | bash
 
-# Remote
-curl -fsSL <url>/install.sh | bash
+# Local
+git clone https://github.com/apapamarkou/lazypacman.git && cd lazypacman && ./install
 ```
 
 ## CLI Commands
 ```bash
 pkg                    # Launch TUI
-pkg i <package>        # Install
-pkg r <package>        # Remove
-pkg s <term>           # Search
+pkg i <pkg>...         # Install package(s)
+pkg r <pkg>...         # Remove package(s)
+pkg info <pkg>         # Show package info
+pkg s <term>           # Search (auto-paged if >24)
 pkg sno <term>         # Search names only
 pkg u                  # Update system
 pkg co                 # Clean orphans
