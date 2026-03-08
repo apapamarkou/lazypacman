@@ -24,30 +24,16 @@ generate_preview() {
                 local value="${BASH_REMATCH[2]}"
                 value="${value# }"  # Trim leading space
                 
-                # Special handling for "Depends On" field
+                # Skip "Depends On" field - shown in tree below
                 if [[ "$field" =~ "Depends On" ]]; then
-                    echo -ne "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET}"
-                    # Color each dependency based on install status
-                    if [[ -z "$value" || "$value" == "None" ]]; then
-                        echo -e " ${COLOR_GREY}None${COLOR_RESET}"
-                    else
-                        for dep in $value; do
-                            dep_name=$(echo "$dep" | sed 's/[<>=].*//')
-                            if pacman -Q "$dep_name" &>/dev/null 2>&1; then
-                                echo -ne " ${COLOR_GREEN}${dep}${COLOR_RESET}"
-                            else
-                                echo -ne " ${COLOR_GREY}${dep}${COLOR_RESET}"
-                            fi
-                        done
-                        echo
-                    fi
+                    continue
+                fi
+                
+                # Field name in cyan, value in light grey
+                if [[ -z "$value" ]]; then
+                    echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET} ${COLOR_GREY}None${COLOR_RESET}"
                 else
-                    # Field name in cyan, value in light grey
-                    if [[ -z "$value" ]]; then
-                        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET} ${COLOR_GREY}None${COLOR_RESET}"
-                    else
-                        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET} ${COLOR_GREY}${value}${COLOR_RESET}"
-                    fi
+                    echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET} ${COLOR_GREY}${value}${COLOR_RESET}"
                 fi
             elif [[ -n "$line" ]]; then
                 # Continuation line (no colon) - display as grey text with indent
@@ -60,15 +46,19 @@ generate_preview() {
         # Show dependency tree only if package is installed
         if pacman -Q "$pkg" &>/dev/null; then
             echo -e "${COLOR_CYAN}▶ Dependency Tree${COLOR_RESET}"
-            pactree "$pkg" 2>/dev/null | while IFS= read -r line; do
-                if [[ "$line" == "$pkg" ]]; then
-                    echo -e "  ${COLOR_BOLD}${COLOR_GREEN}$line${COLOR_RESET}"
-                else
-                    echo -e "  ${COLOR_DIM}$line${COLOR_RESET}"
-                fi
-            done || echo -e "  ${COLOR_DIM}(error reading tree)${COLOR_RESET}"
+            if command -v pactree &>/dev/null; then
+                pactree "$pkg" 2>/dev/null | while IFS= read -r line; do
+                    if [[ "$line" == "$pkg" ]]; then
+                        echo -e "  ${COLOR_BOLD}${COLOR_GREEN}$line${COLOR_RESET}"
+                    else
+                        echo -e "  ${COLOR_DIM}$line${COLOR_RESET}"
+                    fi
+                done
+            else
+                echo -e "  ${COLOR_DIM}(install 'pacman-contrib' for tree view)${COLOR_RESET}"
+            fi
         else
-            echo -e "${COLOR_CYAN}▶ Dependencies${COLOR_RESET}"
+            echo -e "${COLOR_CYAN}▶ Dependency Tree${COLOR_RESET}"
             # Show dependencies from package info for non-installed packages
             local deps
             if pacman -Si "$pkg" &>/dev/null; then
@@ -78,15 +68,29 @@ generate_preview() {
             fi
             
             if [[ -n "$deps" && "$deps" != "None" ]]; then
-                # Parse and display each dependency vertically with install status
-                echo "$deps" | tr ' ' '\n' | while read -r dep; do
+                # Display root package
+                echo -e "  ${COLOR_BOLD}${COLOR_GREY}$pkg${COLOR_RESET}"
+                # Parse and display each dependency as tree with install status
+                local dep_array=($deps)
+                local total=${#dep_array[@]}
+                local i=0
+                for dep in "${dep_array[@]}"; do
                     [[ -z "$dep" ]] && continue
+                    i=$((i + 1))
                     # Remove version constraints
                     dep_name=$(echo "$dep" | sed 's/[<>=].*//')
-                    if pacman -Q "$dep_name" &>/dev/null; then
-                        echo -e "  ${COLOR_GREEN}[I]${COLOR_RESET} $dep_name"
+                    
+                    # Tree characters
+                    if [[ $i -eq $total ]]; then
+                        local prefix="  └─"
                     else
-                        echo -e "  ${COLOR_DIM}[_]${COLOR_RESET} ${COLOR_DIM}$dep_name${COLOR_RESET}"
+                        local prefix="  ├─"
+                    fi
+                    
+                    if pacman -Q "$dep_name" &>/dev/null; then
+                        echo -e "${prefix} ${COLOR_GREEN}$dep_name${COLOR_RESET}"
+                    else
+                        echo -e "${prefix} ${COLOR_DIM}$dep_name${COLOR_RESET}"
                     fi
                 done
             else
@@ -113,7 +117,7 @@ preview_pkgbuild() {
     
     echo "Fetching PKGBUILD for $pkg..."
     if yay -G "$pkg" &>/dev/null && [[ -f "$pkg/PKGBUILD" ]]; then
-        less "$pkg/PKGBUILD"
+        most "$pkg/PKGBUILD"
     else
         echo "PKGBUILD not available for $pkg"
         read -rp "Press Enter to continue..."

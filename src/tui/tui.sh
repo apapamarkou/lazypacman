@@ -32,7 +32,7 @@ launch_tui() {
             --border \
             --preview-window=right:60% \
             --preview "$MODULE_DIR/tui/fzf_preview.sh {}" \
-            --header "$(echo -e "${COLOR_CYAN}${COLOR_BOLD}Package Manager${update_msg}${COLOR_RESET}\n${COLOR_DIM}Enter: install/remove | Ctrl+U: update | Ctrl+O: orphans | Ctrl+B: PKGBUILD | Ctrl+Q: quit${COLOR_RESET}")" \
+            --header "$(echo -e "${COLOR_CYAN}${COLOR_BOLD}Package Manager${update_msg}${COLOR_RESET}\n${COLOR_DIM}Enter: install/remove | Ctrl+U: update | Ctrl+O: orphans\nCtrl+B: PKGBUILD | Ctrl+Q: quit${COLOR_RESET}")" \
             --bind "enter:execute($MODULE_DIR/tui/fzf_action.sh {})" \
             --bind "ctrl-u:execute($MODULE_DIR/tui/fzf_update.sh)" \
             --bind "ctrl-o:execute($MODULE_DIR/tui/fzf_orphans.sh)" \

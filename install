@@ -32,7 +32,7 @@ fi
 echo
 echo "Checking dependencies..."
 missing=()
-for dep in pacman yay fzf jq curl; do
+for dep in pacman yay fzf jq curl pacman-contrib most; do
     if ! command -v "$dep" &>/dev/null; then
         missing+=("$dep")
     fi

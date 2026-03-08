@@ -42,9 +42,7 @@ remove_package() {
         echo
     fi
     
-    read -rp "Remove $pkg? (Y/N): " confirm
-    
-    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    if ask_yn "Remove $pkg? (Y/N): "; then
         sudo pacman -R "$pkg"
     else
         echo "Cancelled."

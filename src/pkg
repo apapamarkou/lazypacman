@@ -19,6 +19,7 @@ source "$MODULE_DIR/core/loader.sh"
 require core/config
 require core/colors
 require core/utils
+require core/prompt
 require cache/cache
 require system/dependencies
 require system/updates

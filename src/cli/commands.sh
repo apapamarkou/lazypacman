@@ -50,11 +50,26 @@ cli_search() {
         installed_map[$pkg]=1
     done < <(pacman -Qq)
     
-    search_cache "$term" "$names_only" | while read -r pkg source; do
-        local is_installed=0
-        [[ -n "${installed_map[$pkg]:-}" ]] && is_installed=1
-        format_package_line "$pkg" "$source" "$is_installed"
-    done
+    # Count results
+    local results
+    results=$(search_cache "$term" "$names_only")
+    local count=$(echo "$results" | wc -l)
+    
+    if [[ $count -gt 24 ]]; then
+        # Use pager for long lists
+        echo "$results" | while read -r pkg source; do
+            local is_installed=0
+            [[ -n "${installed_map[$pkg]:-}" ]] && is_installed=1
+            format_package_line "$pkg" "$source" "$is_installed"
+        done | most
+    else
+        # Direct output for short lists
+        echo "$results" | while read -r pkg source; do
+            local is_installed=0
+            [[ -n "${installed_map[$pkg]:-}" ]] && is_installed=1
+            format_package_line "$pkg" "$source" "$is_installed"
+        done
+    fi
 }
 
 # CLI update command
