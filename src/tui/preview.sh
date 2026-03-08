@@ -135,6 +135,6 @@ preview_pkgbuild() {
         read -rp "Press Enter to continue..."
     fi
     
-    cd - &>/dev/null
+    cd - &>/dev/null || exit
     rm -rf "$tmpdir"
 }
