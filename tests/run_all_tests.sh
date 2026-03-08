@@ -27,6 +27,7 @@ if ! command -v bats &>/dev/null; then
     echo "Running basic smoke tests..."
     echo
     
+    # shellcheck disable=SC1091
     source "$MODULE_DIR/core/loader.sh"
     require core/config && echo "✓ core/config loads"
     require core/colors && echo "✓ core/colors loads"

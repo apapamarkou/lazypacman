@@ -26,6 +26,7 @@ MODULE_DIR="$SCRIPT_DIR"
 
 # Load core modules
 # shellcheck source=core/loader.sh
+# shellcheck disable=SC1091
 source "$MODULE_DIR/core/loader.sh"
 
 require core/config
