@@ -42,7 +42,7 @@ launch_tui() {
         done | fzf \
             --ansi \
             --layout=reverse \
-            --height=24 \
+            --height=100% \
             --border \
             --preview-window=right:60% \
             --preview "$MODULE_DIR/tui/fzf_preview.sh {}" \
