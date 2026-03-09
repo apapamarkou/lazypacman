@@ -23,4 +23,5 @@ require core/utils
 require pacman/pacman
 require tui/actions
 
+clear
 handle_package_action "$1"

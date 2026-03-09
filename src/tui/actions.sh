@@ -24,6 +24,7 @@ handle_package_action() {
     
     [[ -z "$pkg" ]] && return
     
+    clear
     if is_installed "$pkg"; then
         remove_package "$pkg"
     else

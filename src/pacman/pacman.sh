@@ -54,7 +54,7 @@ remove_package() {
         echo
         echo "$rdeps"
         echo
-        echo "Removing it may break them."
+        echo -e "${COLOR_YELLOW}Warning:${COLOR_RESET} Removing it may break dependencies."
         echo
     fi
     

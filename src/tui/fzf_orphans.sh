@@ -20,4 +20,5 @@ source "$MODULE_DIR/core/loader.sh"
 require core/prompt
 require system/orphan_cleaner
 
+clear
 clean_orphans

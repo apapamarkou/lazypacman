@@ -13,6 +13,24 @@
 #
 # TUI preview generation - lazy on-demand loading
 
+# Colorize package names in dependency lines
+colorize_deps() {
+    local text="$1"
+    local result="$text"
+    
+    # Find and colorize each package name
+    local words
+    read -ra words <<< "$text"
+    for word in "${words[@]}"; do
+        # Extract package name (remove version constraints and colons)
+        local pkg="${word%%[:<>=]*}"
+        if [[ -n "$pkg" ]] && pacman -Q "$pkg" &>/dev/null 2>&1; then
+            result="${result/"$word"/"${COLOR_GREEN}${word}${COLOR_GREY}"}"
+        fi
+    done
+    echo -n "$result"
+}
+
 # Generate preview for package (called on-demand by fzf)
 generate_preview() {
     local line="$1"
@@ -30,26 +48,34 @@ generate_preview() {
         echo -e "${COLOR_CYAN}╭────────────────────────────────────────${COLOR_RESET}"
         mapfile -t lines <<< "$info"
         for line in "${lines[@]}"; do
-            # Check if line contains a field (has colon)
-            if [[ "$line" =~ ^([^:]+):(.*)$ ]]; then
+            # Check if line starts with space (continuation line)
+            if [[ "$line" =~ ^[[:space:]] ]]; then
+                # Continuation line - colorize installed packages
+                local colored_line
+                colored_line=$(colorize_deps "$line")
+                echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_GREY}${colored_line}${COLOR_RESET}"
+            elif [[ "$line" =~ ^([^:]+):(.*)$ ]]; then
+                # Field line - field name in blue, value in grey
                 local field="${BASH_REMATCH[1]}"
                 local value="${BASH_REMATCH[2]}"
                 value="${value# }"  # Trim leading space
                 
-                # Skip "Depends On" field - shown in tree below
-                if [[ "$field" =~ "Depends On" ]]; then
-                    continue
-                fi
-                
-                # Field name in cyan, value in light grey
-                if [[ -z "$value" ]]; then
-                    echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET} ${COLOR_GREY}None${COLOR_RESET}"
+                # Colorize installed packages in Depends On and Optional Deps fields
+                if [[ "$field" =~ "Depends On"|"Optional Deps" ]]; then
+                    local colored_value
+                    colored_value=$(colorize_deps "$value")
+                    if [[ -z "$value" ]]; then
+                        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_BLUE}${field}:${COLOR_RESET} ${COLOR_GREY}None${COLOR_RESET}"
+                    else
+                        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_BLUE}${field}:${COLOR_RESET} ${COLOR_GREY}${colored_value}${COLOR_RESET}"
+                    fi
                 else
-                    echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_CYAN}${field}:${COLOR_RESET} ${COLOR_GREY}${value}${COLOR_RESET}"
+                    if [[ -z "$value" ]]; then
+                        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_BLUE}${field}:${COLOR_RESET} ${COLOR_GREY}None${COLOR_RESET}"
+                    else
+                        echo -e "${COLOR_CYAN}│${COLOR_RESET} ${COLOR_BLUE}${field}:${COLOR_RESET} ${COLOR_GREY}${value}${COLOR_RESET}"
+                    fi
                 fi
-            elif [[ -n "$line" ]]; then
-                # Continuation line (no colon) - display as grey text with indent
-                echo -e "${COLOR_CYAN}│${COLOR_RESET}   ${COLOR_GREY}${line}${COLOR_RESET}"
             fi
         done
         echo -e "${COLOR_CYAN}╰────────────────────────────────────────${COLOR_RESET}"
