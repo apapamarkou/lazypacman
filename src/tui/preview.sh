@@ -155,7 +155,7 @@ preview_pkgbuild() {
     
     echo "Fetching PKGBUILD for $pkg..."
     if yay -G "$pkg" &>/dev/null && [[ -f "$pkg/PKGBUILD" ]]; then
-        most "$pkg/PKGBUILD"
+        $PAGER "$pkg/PKGBUILD"
     else
         echo "PKGBUILD not available for $pkg"
         read -rp "Press Enter to continue..."

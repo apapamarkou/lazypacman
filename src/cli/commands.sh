@@ -109,7 +109,7 @@ cli_info() {
                     echo -e "  ${COLOR_DIM}(install 'pacman-contrib' for tree view)${COLOR_RESET}"
                 fi
             fi
-        ) | most
+        ) | $PAGER
     else
         echo -e "${COLOR_RED}Package '$pkg' not found${COLOR_RESET}"
         exit 1
@@ -140,7 +140,7 @@ cli_search() {
             local is_installed=0
             [[ -n "${installed_map[$pkg]:-}" ]] && is_installed=1
             format_package_line "$pkg" "$source" "$is_installed"
-        done | most
+        done | $PAGER
     else
         # Direct output for short lists
         echo "$results" | while read -r pkg source; do

@@ -23,3 +23,14 @@ UPDATE_CHECK_INTERVAL=$((6 * 3600))  # 6 hours
 # Performance: minimal cache for fast startup, lazy preview generation
 # Set to 0 to disable AUR in cache (much faster)
 INCLUDE_AUR="${LAZYPACMAN_INCLUDE_AUR:-1}"
+
+# Pager detection
+if [[ -z "${PAGER:-}" ]]; then
+    if command -v most &>/dev/null; then
+        PAGER="most"
+    elif command -v less &>/dev/null; then
+        PAGER="less -FR"
+    else
+        PAGER="more"
+    fi
+fi
