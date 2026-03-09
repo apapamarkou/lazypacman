@@ -13,6 +13,10 @@
 #
 # Pacman operations
 
+require core/prompt
+require core/colors
+require cache/cache
+
 # Install package
 install_package() {
     local pkg="$1"

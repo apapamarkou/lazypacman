@@ -13,6 +13,9 @@
 #
 # TUI actions
 
+require core/prompt
+require cache/cache
+
 # Handle package selection (install/remove)
 handle_package_action() {
     local line="$1"
@@ -24,8 +27,7 @@ handle_package_action() {
     if is_installed "$pkg"; then
         remove_package "$pkg"
     else
-        read -rp "Install $pkg? (Y/N): " confirm
-        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        if ask_yn "Install $pkg? (Y/N): "; then
             local source
             source=$(get_package_source "$pkg")
             
