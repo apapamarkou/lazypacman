@@ -1,8 +1,9 @@
 # lazypacman
 
 Fast TUI + CLI package manager wrapper for Arch Linux
-
 A modern terminal interface for managing packages using pacman, yay, and fzf.
+
+<img width="70%" alt="pkg" src="https://github.com/user-attachments/assets/94aa9b68-ecae-43ee-9f43-d9e716ea4d82" />
 
 ## Features
 
