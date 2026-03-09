@@ -1,3 +1,6 @@
+[![Release](https://img.shields.io/github/v/release/apapamarkou/pipewire-controller?style=for-the-badge)](https://github.com/apapamarkou/pipewire-controller/releases)
+[![License](https://img.shields.io/github/license/apapamarkou/pipewire-controller?style=for-the-badge)](LICENSE)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/andrianos)
 # lazypacman
 
 Fast TUI + CLI package manager wrapper for Arch Linux
@@ -175,3 +178,9 @@ GPL-3.0
 ## Contributing
 
 Contributions welcome! Please open an issue or pull request.
+
+<a href="https://buymeacoffee.com/andrianos" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+       alt="Buy Me A Coffee"
+       style="height: 60px !important;width: 217px !important;" >
+</a>
